@@ -11,6 +11,7 @@ def homepage(request):
 	res = request.GET["res"] 
 
 	print 'add1'
+	print 'ft add1'
 	 
 	tmp = cache.get('res')
 	
