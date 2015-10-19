@@ -9,9 +9,10 @@ from apps.home.tasks import add
 
 def homepage(request):
 	context = template.RequestContext(request)
-
+	
 	res = request.GET["res"] 
-
+	
+	print 'dev add1'
 	print 'add1'
 	print 'ft add1'
 	#import pdb;pdb.set_trace() 
