@@ -19,4 +19,9 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^index/', "apps.home.view.homepage"),
+    url(r'^redis_cache/', "apps.home.view.redis_cache"),
+    url(r'^memcached_cache/', "apps.home.view.memcached_cache"),
+    url(r'^ocs_cache/', "apps.home.view.ocs_cache"),
+    url(r'^kvs_cache/', "apps.home.view.kvs_cache"),
+    url(r'^send_mail/', "apps.home.view.send_mail"),
 ]

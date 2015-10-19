@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for myblog project.
 
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'myblog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(PROJECT_ROOT, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,24 +102,70 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-
+KEY_PREFIX = 'hl'
 SENTINEL_LOCATION = ['10.101.95.57:26379', '10.189.195.143:26379', '10.101.82.133:26379']
+REDIS_BACKEND = "libs.djangos.cache.redis_backend.RedisCache"
+OCS_BACKEND = "django_bmemcached.memcached.BMemcached"
+OCS_BACKEND_OTHER = "libs.cache_backend.NoCloseMemcachedBackend"
+REDIS_LOCATION_DEFAULT = "10.218.144.33:6379"
+REDIS_LOCATION_DEFAULT_PASSWORD = "42e4b12e576a11e5:123456_78a1A"
 CACHE_SOCKET_TIMEOUT = 0.5
 CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    #"default": {
+    #    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    #},
+    'default': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+        'KEY_PREFIX': KEY_PREFIX,
+        'OPTIONS': {
+            'MASTER_NAME': 'mymaster',
+            'DB': 2,
+            'READ_SLAVE': False,
+        }
     },
+     "kvs": {
+        "BACKEND": 'redis_cache.cache.RedisCache',
+        "LOCATION": REDIS_LOCATION_DEFAULT,
+        "TIMEOUT": 300,
+        "KEY_PREFIX": KEY_PREFIX,
+        "OPTIONS": {
+            "DB": 0,
+            "PASSWORD": REDIS_LOCATION_DEFAULT_PASSWORD,
+            'POOL_KWARGS': {
+                'socket_timeout': CACHE_SOCKET_TIMEOUT,
+                'socket_connect_timeout': CACHE_SOCKET_TIMEOUT
+            },
+        }
+    },
+    'memcached': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'KEY_PREFIX': KEY_PREFIX,
+    },
+    'ocs': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': ['d37bf52fa23a4bab.m.cnhzaligrpzmfpub001.ocs.aliyuncs.com:11211'],
+        'TIMEOUT': 3600,
+        'OPTIONS': {
+            'username': 'd37bf52fa23a4bab',
+            'password': '2015aos_debug',
+        }
+    },
+    'ali_ocs': {
+        'BACKEND': OCS_BACKEND_OTHER,
+        'LOCATION': ['d37bf52fa23a4bab.m.cnhzaligrpzmfpub001.ocs.aliyuncs.com:11211'],
+        'TIMEOUT': 3600,
+        'OPTIONS': {
+            'username': 'd37bf52fa23a4bab',
+            'password': '2015aos_debug',
+        }
+    }
 }
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(PROJECT_ROOT, 'templates'), ],
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    }
-]
+
+# celery config start
+BROKER_URL = 'redis://@localhost:6379/0'
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = 'redis://@localhost:6379/1'
+BROKER_TRANSPORT_OPTIONS = {'fanout_prefix': True}
