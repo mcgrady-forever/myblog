@@ -15,6 +15,7 @@ def homepage(request):
 	print 'dev add1'
 	print 'add1'
 	print 'ft add1'
+	print 'git not staged'
 	#import pdb;pdb.set_trace() 
 	tmp = cache.get('res')
 	
