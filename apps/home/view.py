@@ -12,6 +12,7 @@ def homepage(request):
 	
 	res = request.GET["res"] 
 	
+	print 'ft add 2'
 	print 'dev add1'
 	print 'add1'
 	print 'ft add1'
